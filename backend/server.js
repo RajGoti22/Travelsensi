@@ -1,10 +1,17 @@
-// Hotel destination autocomplete API
-app.use('/api/hotels/destinations', require('./routes/hotelsDestinations'));
-// Universal hotel search and details API
-app.use('/api/hotels', require('./routes/hotels'));
-// Booking.com15 API proxy
-app.use('/api/booking-com15', require('./routes/bookingCom15'));
-app.use('/api/booking-com15/hotel-details', require('./routes/bookingCom15HotelDetails'));
+// Hotel & Booking related routes (order matters for conditional mock mounting)
+// If USE_MOCK_HOTELS=true, mount mock hotels instead of real booking.com proxy search/details.
+if (process.env.USE_MOCK_HOTELS === 'true') {
+  console.log('⚠️  Using mock hotels data (USE_MOCK_HOTELS=true)');
+  app.use('/api/hotels', require('./routes/demoHotels'));
+} else {
+  // Destination autocomplete (real)
+  app.use('/api/hotels/destinations', require('./routes/hotelsDestinations'));
+  // Real hotels API (Booking.com via RapidAPI)
+  app.use('/api/hotels', require('./routes/hotels'));
+  // Booking.com15 API proxy (extra endpoints)
+  app.use('/api/booking-com15', require('./routes/bookingCom15'));
+  app.use('/api/booking-com15/hotel-details', require('./routes/bookingCom15HotelDetails'));
+}
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
